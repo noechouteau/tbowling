@@ -14,7 +14,7 @@ THREE.ColorManagement.enabled = false
 let followBall = false
 let ballLaunched = false
 let totalScore = 0
-let manche = 1
+let manche = 9
 let tir = 1
 let Lastnb = 0
 
@@ -746,7 +746,12 @@ let tempQuilles = []
 let upQuilles = []
 let previousScore = 0
 let strike = false
+let spare = false
 let storedStrikeSpares = []
+
+let handleEnd = () => {
+    console.log("end")
+}
 
 let handleTir = (score) =>{
     already = false
@@ -760,9 +765,12 @@ let handleTir = (score) =>{
             strike = true
         } else if(tir == 2){
             scoreCase.innerHTML = "/"
+            storedStrikeSpares.push("/")
+            spare = true
         }
     } else if(score + previousScore == 10){
         scoreCase.innerHTML = "/"
+        spare = true
         storedStrikeSpares.push("/")
     } else if(storedStrikeSpares.length > 0){
         for(let strikeSpare of storedStrikeSpares){
@@ -785,9 +793,10 @@ let handleTir = (score) =>{
         previousScore = score
         tempQuilles = upQuilles
         console.log(tempQuilles)
-    } else if(((tir == 2 || strike) && manche != 10) || tir==3){
+    } else if(((tir == 2 || strike) && manche != 10)){
         let totalManche = document.getElementById("totalmanche"+manche)
         strike = false
+        spare = false
         totalManche.innerHTML = totalScore
         manche++
         previousScore = 0
@@ -802,10 +811,10 @@ let handleTir = (score) =>{
         qMeshes = []
         tempQuilles = []
         createQuilles()
-    } else if (strike && manche == 10){
+    } else if (strike && manche == 10 && !spare){
         strike = false
         previousScore = 0
-        tir = 2
+        tir ++
         let i = 1
         for(let quille of quilles){
             world.removeBody(quille)
@@ -816,6 +825,33 @@ let handleTir = (score) =>{
         qMeshes = []
         tempQuilles = []
         createQuilles()
+    } else if(tir == 2 && manche == 10 && !spare){
+        tir = 3
+        previousScore = score
+        tempQuilles = upQuilles
+        handleEnd()
+    }
+    else if(tir == 2 && manche == 10 && spare){
+        tir = 3
+        spare = false
+        previousScore = 0
+        let i = 1
+        for(let quille of quilles){
+            world.removeBody(quille)
+            scene.remove(qMeshes[i])
+            i++
+        }
+        quilles = []
+        qMeshes = []
+        tempQuilles = []
+        createQuilles()
+    }
+    else if(tir == 3){
+        let totalManche = document.getElementById("totalmanche"+manche)
+        totalManche.innerHTML = totalScore
+        let total = document.getElementById("total")
+        total.innerHTML = totalScore
+        handleEnd()
     }
 
 
