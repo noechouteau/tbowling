@@ -1,0 +1,271 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
+*
+{
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body
+{
+    overflow: hidden;
+}
+
+.webgl
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    outline: none;
+}
+
+#scoreDiv{
+    position : absolute;
+    z-index: 1;
+    display: flex;
+    font-size: 19px;
+    height: 630px;
+    overflow: scroll ;
+    border-radius: 10px;
+    border: 2px solid rgb(255, 255, 255);
+    justify-content: center;
+    background-color: rgb(20, 16, 59);
+    left: -30px;
+    margin: 10px;
+}
+
+#scoreDiv::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+    display: none;
+}
+
+#scoreImg{
+    width: 200px;
+    height: 790px;
+    margin: 10px;
+}
+
+#eventText{
+    position: absolute;
+    color: rgb(255, 255, 255);
+
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    z-index: 3;
+    font-size: 50vh;
+    opacity: 0;
+}
+
+#scores{
+    position: absolute;
+    color: rgb(255, 255, 255);
+
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+}
+
+#tir1manche1{
+    position: absolute;
+    left: -8px;
+    top: 76px;
+}
+
+#tir2manche1{
+    position: absolute;
+    left:27px;
+    top: 76px;
+}
+
+#tir1manche2{
+    position: absolute;
+    left: -8px;
+    top: 143px;
+}
+
+#tir2manche2{
+    position: absolute;
+    left: 27px;
+    top: 143px;
+}
+
+#tir1manche3{
+    position: absolute;
+    left: -8px;
+    top: 208px;
+}
+
+#tir2manche3{
+    position: absolute;
+    left: 27px;
+    top: 208px;
+}
+
+#tir1manche4{
+    position: absolute;
+    left: -8px;
+    top: 273px;
+}
+
+#tir2manche4{
+    position: absolute;
+    left: 27px;
+    top: 273px;
+}
+
+#tir1manche5{
+    position: absolute;
+    left: -8px;
+    top: 340px;
+}
+
+#tir2manche5{
+    position: absolute;
+    left: 27px;
+    top: 340px;
+}
+
+#tir1manche6{
+    position: absolute;
+    left: -8px;
+    top: 406px;
+}
+
+#tir2manche6{
+    position: absolute;
+    left: 27px;
+    top: 406px;
+}
+
+#tir1manche7{
+    position: absolute;
+    left: -8px;
+    top: 471px;
+}
+
+#tir2manche7{
+    position: absolute;
+    left: 27px;
+    top: 471px;
+}
+
+#tir1manche8{
+    position: absolute;
+    left: -8px;
+    top: 536px;
+}
+
+#tir2manche8{
+    position: absolute;
+    left: 27px;
+    top: 536px;
+}
+
+#tir1manche9{
+    position: absolute;
+    left: -8px;
+    top: 603px;
+}
+
+#tir2manche9{
+    position: absolute;
+    left: 27px;
+    top: 603px;
+}
+
+#tir1manche10{
+    position: absolute;
+    left: -19px;
+    top: 668px;
+}
+
+#tir2manche10{
+    position: absolute;
+    left: 15px;
+    top: 668px;
+}
+
+#tir3manche10{
+    position: absolute;
+    left: 45px;
+    top: 668px;
+}
+
+#totalmanche1{
+    position: absolute;
+    left: 0px;
+    top: 109px;
+
+}
+
+#totalmanche2{
+    position: absolute;
+    left: 0px;
+    top: 176px;
+
+}
+
+#totalmanche3{
+    position: absolute;
+    left: 0px;
+    top: 241px;
+
+}
+
+#totalmanche4{
+    position: absolute;
+    left: 0px;
+    top: 306px;
+
+}
+
+#totalmanche5{
+    position: absolute;
+    left: 0px;
+    top: 373px;
+
+}
+
+#totalmanche6{
+    position: absolute;
+    left: 0px;
+    top: 439px;
+
+}
+
+#totalmanche7{
+    position: absolute;
+    left: 0px;
+    top: 504px;
+
+}
+
+#totalmanche8{
+    position: absolute;
+    left: 0px;
+    top: 569px;
+
+}
+
+#totalmanche9{
+    position: absolute;
+    left: 0px;
+    top: 636px;
+
+}
+
+#totalmanche10{
+    position: absolute;
+    left: 0px;
+    top: 701px;
+
+}
+
+
+
+
+
+
+

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bowling</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div id="eventImageDiv" style="width:100vw; height:100vh; display: flex;justify-content: center;align-items: center;position: absolute;pointer-events: none;">
+        <h1 id="eventText">0</h1>
+        <img id="eventImage" src="images/moai.jpg" style="z-index: 2;position: absolute; opacity: 0;width: 100vw;height: 100vh;" draggable="false">
+    </div>
+    <div id="scoreDiv">
+        <div id="scores">
+            <p id="tir1manche1"></p>
+            <p id="tir2manche1"></p>
+            <p id="totalmanche1"></p>
+            <p id="tir1manche2"></p>
+            <p id="tir2manche2"></p>
+            <p id="totalmanche2"></p>
+            <p id="tir1manche3"></p>
+            <p id="tir2manche3"></p>
+            <p id="totalmanche3"></p>
+            <p id="tir1manche4"></p>
+            <p id="tir2manche4"></p>
+            <p id="totalmanche4"></p>
+            <p id="tir1manche5"></p>
+            <p id="tir2manche5"></p>
+            <p id="totalmanche5"></p>
+            <p id="tir1manche6"></p>
+            <p id="tir2manche6"></p>
+            <p id="totalmanche6"></p>
+            <p id="tir1manche7"></p>
+            <p id="tir2manche7"></p>
+            <p id="totalmanche7"></p>
+            <p id="tir1manche8"></p>
+            <p id="tir2manche8"></p>
+            <p id="totalmanche8"></p>
+            <p id="tir1manche9"></p>
+            <p id="tir2manche9"></p>
+            <p id="totalmanche9"></p>
+            <p id="tir1manche10"></p>
+            <p id="tir2manche10"></p>
+            <p id="tir3manche10"></p>
+            <p id="totalmanche10"></p>
+        </div>
+        <img id="scoreImg" src="score.png" draggable="false" >
+    </div>
+    <canvas class="webgl"></canvas>
+    <script type="module" src="./script.js"></script>
+</body>
+</html>
