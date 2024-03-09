@@ -14,7 +14,7 @@ THREE.ColorManagement.enabled = false
 let followBall = false
 let ballLaunched = false
 let totalScore = 0
-let manche = 9
+let manche = 1
 let tir = 1
 let Lastnb = 0
 
@@ -60,7 +60,7 @@ const hitSound = new Audio('/sounds/hit.wav')
 const wallSound = new Audio('/sounds/hit.mp3')
 const bg = new Audio('/sounds/bg.mp3')
 
-bg.volume = 0.3
+bg.volume = 0.4
 bg.loop = true
 
 setTimeout(() => {
@@ -567,7 +567,6 @@ const tick = () =>
     const deltaTime = elapsedTime - oldElapsedTime
     oldElapsedTime = elapsedTime
     if(ballBody)
-    console.log(ballBody.position.y > 0)
 
     if(ballBody && followBall && camera.position.x < 70 && ballBody.position.y > 0){
         gsap.to(camera.position, { 
@@ -746,8 +745,10 @@ let tempQuilles = []
 let upQuilles = []
 let previousScore = 0
 let strike = false
+let doubleStrike = false
 let spare = false
-let storedStrikeSpares = []
+let wasStrike = false
+let wasSpare = false
 
 let handleEnd = () => {
     console.log("end")
@@ -760,34 +761,88 @@ let handleTir = (score) =>{
     scoreCase.innerHTML = score
     if(score == 10){
         if(tir == 1){
+            if(wasStrike || wasSpare){
+                if(doubleStrike){
+                    let totalPrevious = document.getElementById("totalmanche"+(manche-2))
+                    totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + 10
+                    totalScore += 10
+                }
+                let totalPrevious = document.getElementById("totalmanche"+(manche-1))
+                doubleStrike = true
+                totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + 10
+                totalScore += 10
+                score = 10
+            } else {
+                doubleStrike = false
+            }
             scoreCase.innerHTML = "X"
-            storedStrikeSpares.push("X")
+            wasStrike = true
+            wasSpare = false
             strike = true
+            console.log("total",totalScore)
         } else if(tir == 2){
+            if(wasStrike){
+                let totalPrevious = document.getElementById("totalmanche"+(manche-1))
+                totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + score
+                totalScore += score
+            } else {
+                doubleStrike = false
+            }
             scoreCase.innerHTML = "/"
-            storedStrikeSpares.push("/")
+            wasSpare = true
+            wasStrike = false
             spare = true
         }
     } else if(score + previousScore == 10){
+        if(wasStrike){
+            let totalPrevious = document.getElementById("totalmanche"+(manche-1))
+            totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + score
+            totalScore += score
+            console.log("total",totalScore)
+
+        } 
+        wasSpare = true
+        wasStrike = false
         scoreCase.innerHTML = "/"
         spare = true
-        storedStrikeSpares.push("/")
-    } else if(storedStrikeSpares.length > 0){
-        for(let strikeSpare of storedStrikeSpares){
-            if(strikeSpare == "X" || (strikeSpare == "/" && tir == 1)){
-                totalScore += score
-            }
+    } else if((tir == 1 && wasSpare)){
+        let totalPrevious = document.getElementById("totalmanche"+(manche-1))
+        totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + score
+        totalScore += score
+        console.log("total",totalScore)
+        wasSpare = false
+    }else if(wasStrike){
+        console.log(score)
+        if(doubleStrike){
+            let totalPrevious = document.getElementById("totalmanche"+(manche-2))
+            totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + score
+            totalScore += score
+            let totalPrevious2 = document.getElementById("totalmanche"+(manche-1))
+            totalPrevious2.innerHTML = parseInt(totalPrevious2.innerHTML) + score + score
+            doubleStrike = false
+        } else {
+            let totalPrevious = document.getElementById("totalmanche"+(manche-1))
+            totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + score
         }
+        totalScore += score
+        console.log("total",totalScore)
+
         if(tir == 2){
-            storedStrikeSpares = []
+            wasStrike = false
         }
+    } 
+    else if(tir == 2){
+        wasStrike = false
+        wasSpare = false
     }
+
     totalScore += score
     gsap.to(scoreDiv, { 
         duration: 0.7,
         ease: "back.out",
         left: "-30px",
       });
+
     if(tir == 1 && !strike){
         tir = 2
         previousScore = score
@@ -801,7 +856,7 @@ let handleTir = (score) =>{
         manche++
         previousScore = 0
         tir = 1
-        let i = 1
+        let i = 0
         for(let quille of quilles){
             world.removeBody(quille)
             scene.remove(qMeshes[i])
@@ -815,7 +870,7 @@ let handleTir = (score) =>{
         strike = false
         previousScore = 0
         tir ++
-        let i = 1
+        let i = 0
         for(let quille of quilles){
             world.removeBody(quille)
             scene.remove(qMeshes[i])
@@ -835,7 +890,7 @@ let handleTir = (score) =>{
         tir = 3
         spare = false
         previousScore = 0
-        let i = 1
+        let i = 0
         for(let quille of quilles){
             world.removeBody(quille)
             scene.remove(qMeshes[i])
