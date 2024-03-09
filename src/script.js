@@ -22,8 +22,8 @@ let eventImageDiv = document.getElementById("eventImageDiv")
 let eventImage = document.getElementById("eventImage")
 let eventText = document.getElementById("eventText")
 
-let failSounds = ["alarm.mp3", "baby.mp3", "boom.mp3", "goofyglisse.mp3","malicieux.mp3","vi.mp3"]
-let failImages = ["wwchokbar.jpg","ahah.png","moai.jpg","nerd.jpg","wisetree.jpg","grr.jpg"]
+let failSounds = ["alarm.mp3", "boom.mp3", "goofyglisse.mp3","malicieux.mp3","vi.mp3", "baby.mp3"]
+let failImages = ["wwchokbar.jpg","moai.jpg","nerd.jpg","wisetree.jpg","grr.jpg","ahah.png"]
 
 let scoreDiv = document.getElementById("scoreDiv")
 
@@ -60,12 +60,12 @@ const hitSound = new Audio('/sounds/hit.wav')
 const wallSound = new Audio('/sounds/hit.mp3')
 const bg = new Audio('/sounds/bg.mp3')
 
-// bg.volume = 0.3
-// bg.loop = true
+bg.volume = 0.3
+bg.loop = true
 
-// setTimeout(() => {
-//     bg.play()
-// }, 2000);
+setTimeout(() => {
+    bg.play()
+}, 2000);
 
 let already = false
 const playHitSound = (collision) =>
