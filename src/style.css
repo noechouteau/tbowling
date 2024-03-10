@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Modak");
 
 
 *
@@ -23,7 +24,7 @@ body
 
 #scoreDiv{
     position : absolute;
-    z-index: 1;
+    z-index: 4;
     display: flex;
     font-size: 19px;
     height: 630px;
@@ -32,7 +33,7 @@ body
     border: 2px solid rgb(255, 255, 255);
     justify-content: center;
     background-color: rgb(20, 16, 59);
-    left: -30px;
+    left: -1000px;
     margin: 10px;
 }
 
@@ -55,8 +56,228 @@ body
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
     z-index: 3;
-    font-size: 50vh;
+    font-size: 40vh;
     opacity: 0;
+}
+
+#titleDiv{
+    position: relative;
+    z-index: 2;
+    width: 100vw;
+    flex-direction: column;
+    justify-content: center;
+    display: flex;
+}
+
+#modesDiv{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    width: 100vw;
+    height: 70vh;
+    color: rgb(255, 255, 255);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    text-align: center;
+}
+
+#modesDiv div img{
+    transition: 0.5s;
+}
+
+#modesDiv div img:hover{
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    transform: scale(1.1);
+    transition: 0.5s;
+}
+
+#oplayer{
+    width: 20em;
+    height: 20em;
+    border-radius: 15px;
+    border: 2px solid rgb(255, 255, 255);
+}
+
+#tplayers{
+    width: 20em;
+    height: 20em;
+    border-radius: 15px;
+    border: 2px solid rgb(255, 255, 255);
+}
+
+#onePlayer, #twoPlayers{
+    position: relative;
+    z-index: 2;
+    width: 149px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+    border-radius: 10px;
+    border: 2px solid rgb(255, 255, 255);
+    background-color: #600d0d;
+    color: rgb(255, 255, 255);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#usernameDiv{
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    gap: 20px;
+    top: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#usernameDiv h2{
+    color: rgb(255, 255, 255);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: 40px;
+}
+
+#usernameDiv input{
+    width: 300px;
+    height: 50px;
+    border-radius: 10px;
+    border: 2px solid rgb(255, 255, 255);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    text-align: center;
+    color: rgb(255, 255, 255);
+    background-color: rgb(20, 16, 59);
+}
+
+#usernameDiv button{
+    width: 150px;
+    height: 50px;
+    border-radius: 10px;
+    border: 2px solid rgb(20, 16, 59);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    text-align: center;
+    color: rgb(20, 16, 59);
+    background-color: rgb(255, 255, 255);
+    cursor: pointer;
+    transition: 0.5s ease;
+}
+
+#usernameDiv button:hover{
+    background-color: rgb(20, 16, 59);
+    border: 2px solid rgb(255, 255, 255);
+    color: rgb(255, 255, 255);
+    scale: 1.1;
+    transition: 0.5s ease;
+}
+
+:root {
+  --gold: #ffb338;
+  --light-shadow: #77571d;
+  --dark-shadow: #3e2904;
+
+  --silver: #c0c0c0;
+  --light-silver-shadow: #7a7a7a;
+  --dark-silver-shadow: #3e3e3e;
+
+  --neon: #3ddffc;
+    --light-neon-shadow: #1e9bca;
+    --dark-neon-shadow: #196786;
+}
+
+.wrapper {
+  display: none;
+  grid-template-areas: 'overlap';
+  place-content: center;
+  position: absolute;
+  z-index: 3;
+  text-transform: uppercase;
+  height: 100vh;
+  width: 100vw;
+  opacity: 0;
+}
+.wrapper > div {
+  background-clip: text;  
+  -webkit-background-clip: text;
+  color: #363833;
+  font-family: Modak;
+  font-size: clamp( 3em, 18vw, 15rem);
+  grid-area: overlap;
+  letter-spacing: 1px;
+  -webkit-text-stroke: 4px transparent;
+}
+div.bg {
+  background-image: repeating-linear-gradient( 105deg, 
+    var(--gold) 0% , 
+    var(--dark-shadow) 5%,
+    var(--gold) 12%);
+  color: transparent;
+  
+  width: 101%;
+  text-align: center;
+  filter: drop-shadow(5px 15px 15px black);
+  transform: scaleY(1.05);
+  transform-origin: top;
+}
+div.fg{
+  background-image: repeating-linear-gradient( 5deg,  
+    var(--gold) 0% , 
+    var(--light-shadow) 23%, 
+    var(--gold) 31%);
+  color: rgb(20, 16, 59);
+  
+  width: 101%;
+  text-align: center;
+  transform: scale(1);
+}
+
+div.ffg{
+    background-image: repeating-linear-gradient( 5deg,  
+      var(--gold) 0% , 
+      var(--light-shadow) 23%, 
+      var(--gold) 31%);
+    color: rgb(22, 22, 22);
+    
+    width: 101%;
+    text-align: center;
+    transform: scale(1);
+  }
+
+div.sbg {
+background-image: repeating-linear-gradient( 105deg, 
+    var(--silver) 0% , 
+    var(--dark-silver-shadow) 5%,
+    var(--silver) 12%);
+color: transparent;
+
+width: 101%;
+text-align: center;
+filter: drop-shadow(5px 15px 15px black);
+transform: scaleY(1.05);
+transform-origin: top;
+}
+div.sfg{
+background-image: repeating-linear-gradient( 5deg,  
+    var(--silver) 0% , 
+    var(--light-silver-shadow) 23%, 
+    var(--silver) 31%);
+color: rgb(20, 16, 59);
+
+width: 101%;
+text-align: center;
+transform: scale(1);
 }
 
 #scores{
@@ -83,6 +304,114 @@ body
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+#finalDiv{
+    position : absolute;
+    z-index: 2;
+    width: 100vw;
+    top: -100vh;
+    height: 98vh;
+    display: flex;
+    font-family: 'Poppins', sans-serif;
+    color: rgb(255, 255, 255);
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#playersFinal{
+    z-index: 2;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    font-family: 'Poppins', sans-serif;
+    color: rgb(255, 255, 255);
+    gap: 10vw;
+    align-items: center;
+    justify-content: center;
+}
+
+#playerOneFinal{
+    background-color: rgba(20, 16, 59, 0.548);
+    border-radius: 10px;
+    border: 2px solid rgb(255, 255, 255);
+    padding: 20px;
+}
+
+#playerTwoFinal{
+    background-color: #600d0d79;
+    border-radius: 10px;
+    border: 2px solid rgb(255, 255, 255);
+    padding: 20px;
+    display: none;
+}
+
+#finalScore{
+    text-align: center;
+}
+
+#finalDiv button {
+    width: 200px;
+    height: 50px;
+    border-radius: 10px;
+    border: 2px solid rgb(0, 0, 0);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    text-align: center;
+    color: rgb(0, 0, 0);
+    background-color: rgb(255, 255, 255);
+    cursor: pointer;
+    transition: 0.5s ease;
+}
+
+#finalDiv button:hover{
+    background-color: rgb(27, 27, 27);
+    border: 2px solid rgb(255, 255, 255);
+    color: rgb(255, 255, 255);
+    scale: 1.1;
+    transition: 0.5s ease;
+}
+
+
+.loading-bar{
+    top: 60%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 250px;
+    background: rgba(236, 236, 238, 0.253);
+    height: 3px;
+    opacity: 1;
+    border-radius: 7px;
+    transition: 0.5s ease;
+    color: rgba(236, 236, 238, 0.495);
+    font-style: italic;
+    font-family: monospace;
+    text-align: center;
+    z-index: 15;
+
+}
+
+.loading-bar p{
+    margin-top:7px;
+}
+
+.progress {
+    content: '';
+    width: 250px;
+    height: 3px;
+    opacity: 1;
+    border-radius: 7px;
+    transform:scaleX(0);
+    background: rgb(255, 255, 255);
+    transition: 0.5s ease;
+    z-index: 1;
+  }
+
+.ended{
+    opacity: 0;
 }
 
 #tir1manche1{

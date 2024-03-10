@@ -9,7 +9,6 @@ import { gsap } from "gsap";
 
 
 
-
 THREE.ColorManagement.enabled = false
 let followBall = false
 let ballLaunched = false
@@ -18,14 +17,67 @@ let manche = 1
 let tir = 1
 let Lastnb = 0
 
+let highscore = window.localStorage.getItem("highscore")
+let highscoreName = window.localStorage.getItem("highscoreName")
+
+let menuDiv = document.getElementById("menuDiv")
+let titleDiv = document.getElementById("titleDiv")
+let oplayer = document.getElementById("oplayer")
+let tplayers = document.getElementById("tplayers")
+let hishgscoreH1 = document.getElementById("highscoreH1")
+
+
 let eventImageDiv = document.getElementById("eventImageDiv")
 let eventImage = document.getElementById("eventImage")
 let eventText = document.getElementById("eventText")
+let strikeText = document.getElementById("strikeText")
+let spareText = document.getElementById("spareText")
+let finishedText = document.getElementById("finishedText")
+let restartButton = document.getElementById("restartButton")
 
 let failSounds = ["alarm.mp3", "boom.mp3", "goofyglisse.mp3","malicieux.mp3","vi.mp3", "baby.mp3"]
 let failImages = ["wwchokbar.jpg","moai.jpg","nerd.jpg","wisetree.jpg","grr.jpg","ahah.png"]
 
 let scoreDiv = document.getElementById("scoreDiv")
+
+const loadingBarContainer = document.querySelector('.loading-bar')
+const loadingBarElement = document.querySelector('.progress')
+const waitText = document.querySelector('#waitText')
+const launchText = document.querySelector('#launchText')
+
+const loadingManager = new THREE.LoadingManager(
+    () =>
+    {
+        // console.log('loaded')
+        waitText.classList.add('ended')
+        waitText.style.display = 'none'
+        launchText.classList.remove('ended')
+        gsap.delayedCall(1., () =>
+        {
+            gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0.4, delay: 0.3 })
+            gsap.to(titleDiv, { duration: 0.5, top: 0, ease:"back.out"})
+            gsap.to(oplayer.parentElement, { duration: 1, left: 0, ease:"back.out",delay: 1.3})
+            gsap.to(tplayers.parentElement, { duration: 1, right: 0, ease:"back.out",delay: 1.3})
+            loadingBarContainer.style.opacity = '0'
+            gsap.delayedCall(1, () =>
+            {
+                loadingBarContainer.style.display = 'none'
+                launchText.style.opacity = '0'
+                gui.show();
+            })
+  
+        })
+    },
+    ( itemsUrl, itemsLoaded, itemsTotal) =>
+    {
+        // console.log(itemsLoaded, itemsTotal)
+        const progressRatio = itemsLoaded / itemsTotal
+        // console.log(progressRatio)
+        loadingBarElement.style.transform = `scaleX(${progressRatio})`
+    }
+  )
+
+
 
 /**
  * Debug
@@ -55,6 +107,32 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
+const overlayGeometry = new THREE.PlaneGeometry(2, 2, 1, 1)
+const overlayMaterial = new THREE.ShaderMaterial({
+    transparent: true,
+    side: THREE.DoubleSide,
+    uniforms: {
+        uAlpha: { value: 1 }
+    },
+    vertexShader: `
+        void main()
+        {
+            gl_Position =  vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform float uAlpha;
+
+        void main()
+        {
+            gl_FragColor = vec4(0.0, 0.0, 0.0, uAlpha);
+        }
+    `,
+})
+const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial)
+overlay.position.set(-5, 0, 0)
+scene.add(overlay)
+
 //Sound
 const hitSound = new Audio('/sounds/hit.wav')
 const wallSound = new Audio('/sounds/hit.mp3')
@@ -62,10 +140,6 @@ const bg = new Audio('/sounds/bg.mp3')
 
 bg.volume = 0.4
 bg.loop = true
-
-setTimeout(() => {
-    bg.play()
-}, 2000);
 
 let already = false
 const playHitSound = (collision) =>
@@ -105,7 +179,7 @@ const environmentMapTexture = cubeTextureLoader.load([
 /**
  * Models
  */
-const gltfLoader = new GLTFLoader()
+const gltfLoader = new GLTFLoader(loadingManager)
 
 
 /**
@@ -254,7 +328,8 @@ window.addEventListener('resize', () =>
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
 // camera.position.set(75, 3, -0.3)
-camera.position.set(-4, 2, -0.3)
+// camera.position.set(-4, 2, -0.3)
+camera.position.set(0, 7, -0.3)
 
 scene.add(camera)
 
@@ -263,6 +338,7 @@ const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = false
 controls.enablePan = false
 controls.enableRotate = false
+controls.enableZoom = false
 
 /**
  * Renderer
@@ -531,7 +607,8 @@ gltfLoader.load(
 const clock = new THREE.Clock()
 let oldElapsedTime = 0
 // controls.target.set(80, 0, -0.5)
-controls.target.set(0, 0, -0.3)
+// controls.target.set(0, 0, -0.3)
+controls.target.set(-20, 0, 13)
 
 
 let handleFailure = () => {
@@ -560,6 +637,56 @@ let handleFailure = () => {
         opacity: 0,
     });
 }
+
+let annId = 1
+let announces = ["0.mp3", "1.mp3", "2.mp3", "3.mp3", "4.mp3", "5.mp3"]
+
+let handleStrikeSpare = (text) => {
+    text.style.display = "grid"
+    text.style.opacity = 1
+    let announcer = new Audio("/sounds/announcer/"+announces[annId])
+    let success = new Audio("/sounds/success.mp3")
+    let audio
+    if(text.contains(strikeText)){
+        audio = new Audio("/sounds/strike.mp3")
+    } else {
+        audio = new Audio("/sounds/spare.mp3")
+    }
+    audio.volume = 0.2
+    success.volume = 0.3
+    announcer.volume = 1
+    announcer.play()
+    success.play()
+    audio.play()
+    annId++
+    if(annId == 6){
+        annId = 1
+    }
+
+    gsap.set(text, {
+        scale: 0.1,
+    })
+
+    gsap.to(text, {
+
+        duration: 1,
+        ease: "bounce.out",
+        scale: 1,
+    }).then(() => {
+        gsap.delayedCall(1, () => {
+            gsap.to(text, {
+                duration: 0.4,
+                ease: "ease.out",
+                top: "-70vh",
+            }).then(()=>{
+                text.style.top = ""
+                text.style.opacity = 0
+                text.style.scale = 1
+            })
+        })
+    })
+    }
+
 
 const tick = () =>
 {
@@ -676,6 +803,10 @@ window.addEventListener('mousedown', function(event) {
     console.log('mousedown')
     positionPointer(event)
 
+    if(event.target == oplayer){
+        handleOnePlayerClick()
+    }
+
 
     const intersects = raycaster.intersectObjects( scene.children );
 
@@ -684,8 +815,6 @@ window.addEventListener('mousedown', function(event) {
         console.log(intersect.object)
         if(intersect.object.name === "Bowling_ball014_Material_#4302_0"){
             scene.add(arrowMesh)
-            intersect.object.material.color.set( 0xff0000 );
-            console.log("bruh")
             window.addEventListener('pointermove', getPointer, false);
 
         }
@@ -696,9 +825,10 @@ window.addEventListener('mousedown', function(event) {
 window.addEventListener('mouseup', function(event) {
     positionPointer(event)
     console.log(pointer)
+    scene.remove(arrowMesh)
+
 
     if(ballLaunched && followBall == false){
-        scene.remove(arrowMesh)
         gsap.to(scoreDiv, { 
             duration: 0.7,
             ease: "back.in",
@@ -749,18 +879,130 @@ let doubleStrike = false
 let spare = false
 let wasStrike = false
 let wasSpare = false
+let newHighscore = false
+let finalScore1 = document.getElementById("finalScore1")
+let finalScoreDiv = document.getElementById("finalDiv")
+
+restartButton.addEventListener('click', () => {
+    totalScore = 0
+    manche = 1
+    tir = 1
+    Lastnb = 0
+    let i = 0
+    for(let quille of quilles){
+        world.removeBody(quille)
+        scene.remove(qMeshes[i])
+        i++
+    }
+    quilles = []
+    qMeshes = []
+    tempQuilles = []
+    upQuilles = []
+    createQuilles()
+    
+    for (let manches = 1; manches < 11; manches++){
+        for (let tirs = 1; tirs < 3; tirs++){
+            let scoreCase = document.getElementById("tir"+tirs+"manche"+manches)
+            scoreCase.innerHTML = ""
+        }
+        let totalCase = document.getElementById("totalmanche"+manches)
+        totalCase.innerHTML = ""
+    }
+    document.getElementById("tir3manche10").innerHTML = ""
+    document.getElementById("totalmanche10").innerHTML = ""
+    
+    manche = 10
+    gsap.to(finalScoreDiv, {
+        duration: 1,
+        ease: "ease.out",
+        top: "100vh",
+    })
+    gsap.to(menuDiv, {
+        duration: 1,
+        ease: "ease.out",
+        top: "0",
+    })
+    gsap.to(scoreDiv, {
+        duration: 1,
+        ease: "ease.out",
+        left: "-1000px",
+    })
+})
 
 let handleEnd = () => {
-    console.log("end")
+    hishgscoreH1.innerHTML = "All time Highscore : " + highscore + " by " + highscoreName
+    if(totalScore > highscore){
+        window.localStorage.setItem("highscore", totalScore)
+        window.localStorage.setItem("highscoreName", nameplayer.innerHTML)
+        newHighscore = true
+    }
+    finishedText.style.display = "grid"
+    finishedText.style.opacity = 1
+    let announcer = new Audio("/sounds/announcer/finished.mp3")
+    let success = new Audio("/sounds/success.mp3")
+    success.volume = 0.3
+    announcer.volume = 1
+
+    announcer.play()
+    success.play()
+
+    gsap.set(finishedText, {
+        transform:"translateY(-100vh)"
+    })
+
+    gsap.to(finishedText, {
+
+        duration: 1,
+        ease: "ease.in",
+        transform:"translateY(0vh)"
+    }).then(() => {
+        gsap.delayedCall(1, () => {
+            gsap.to(finishedText, {
+                duration: 1,
+                ease: "ease.out",
+                top: "-100vh",
+            }).then(()=>{
+                finishedText.style.top = ""
+                finishedText.style.opacity = 0
+                finishedText.style.scale = 1
+            })
+            gsap.to(finalScoreDiv, {
+                duration: 1,
+                ease: "ease.out",
+                top: "0",
+            })
+            gsap.to(camera.position, {
+                duration: 1,
+                ease: "power1.in.out",
+                x: 0,
+                y: 7,
+                z: -0.3,
+            })
+            gsap.to(controls.target, {
+                duration: 1,
+                ease: "power1.in.out",
+                x: -20,
+                y: 0,
+                z: 13,
+            })
+            finalScore1.innerHTML = nameplayer.innerHTML + "'s score : " + totalScore
+            if(newHighscore){
+                hishgscoreH1.innerHTML = "New Highscore : " + totalScore + " by " + nameplayer.innerHTML + " !"
+            }
+        })
+    })
 }
+manche = 10
 
 let handleTir = (score) =>{
     already = false
     console.log(score)
     let scoreCase = document.getElementById("tir"+tir+"manche"+manche)
     scoreCase.innerHTML = score
+
     if(score == 10){
         if(tir == 1){
+            handleStrikeSpare(strikeText)
             if(wasStrike || wasSpare){
                 if(doubleStrike){
                     let totalPrevious = document.getElementById("totalmanche"+(manche-2))
@@ -781,6 +1023,7 @@ let handleTir = (score) =>{
             strike = true
             console.log("total",totalScore)
         } else if(tir == 2){
+            handleStrikeSpare(spareText)
             if(wasStrike){
                 let totalPrevious = document.getElementById("totalmanche"+(manche-1))
                 totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + score
@@ -794,6 +1037,7 @@ let handleTir = (score) =>{
             spare = true
         }
     } else if(score + previousScore == 10){
+        handleStrikeSpare(spareText)
         if(wasStrike){
             let totalPrevious = document.getElementById("totalmanche"+(manche-1))
             totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + score
@@ -827,7 +1071,7 @@ let handleTir = (score) =>{
         totalScore += score
         console.log("total",totalScore)
 
-        if(tir == 2){
+        if(tir == 2  && manche != 10){
             wasStrike = false
         }
     } 
@@ -880,11 +1124,16 @@ let handleTir = (score) =>{
         qMeshes = []
         tempQuilles = []
         createQuilles()
-    } else if(tir == 2 && manche == 10 && !spare){
+    } else if(tir == 2 && manche == 10 && !spare && !strike && !wasStrike && !wasSpare){
         tir = 3
         previousScore = score
         tempQuilles = upQuilles
         handleEnd()
+    }
+    else if(tir == 2 && manche == 10 && wasStrike){
+        tir = 3
+        previousScore = score
+        tempQuilles = upQuilles
     }
     else if(tir == 2 && manche == 10 && spare){
         tir = 3
@@ -902,6 +1151,12 @@ let handleTir = (score) =>{
         createQuilles()
     }
     else if(tir == 3){
+        if(wasSpare || wasStrike){
+            let totalPrevious = document.getElementById("totalmanche"+(manche-1))
+            totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + score
+            totalScore += score
+            console.log("total",totalScore)
+        }
         let totalManche = document.getElementById("totalmanche"+manche)
         totalManche.innerHTML = totalScore
         let total = document.getElementById("total")
@@ -909,5 +1164,82 @@ let handleTir = (score) =>{
         handleEnd()
     }
 
+}
 
+let usernameDiv = document.getElementById("usernameDiv")
+let submitUsername1 = document.getElementById("submitUsername1")
+let nameplayer = document.getElementById("nameplayer")
+let username1Input = document.getElementById("username1Input")
+
+let handleOnePlayerClick = () => {
+    console.log("test")
+    bg.play()
+
+    gsap.to(usernameDiv, {
+        duration: 1,
+        ease: "back.out",
+        top: "0",
+      });
+    gsap.to(menuDiv, { 
+        duration:1,
+        ease: "back.out",
+        top: "-100vh",
+      }).then(() => {
+        submitUsername1.addEventListener('click', () => {
+            gsap.to(usernameDiv, {
+                duration: 1,
+                ease: "back.in",
+                top: "-100vh",
+              });
+            gsap.to(controls.target, {
+                duration: 2,
+                ease: "power1.in.out",
+                x: 0,
+                y: 0,
+                z: -0.3,
+            })
+            gsap.to(camera.position, {
+                duration: 2,
+                ease: "power1.in.out",
+                x: -4,
+                y: 2,
+                z: -0.3,
+            })
+            gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 1, value: 0})
+            gsap.to(scoreDiv, { duration: 1, left: "-30px", delay:1})
+            nameplayer.innerHTML = username1Input.value
+            switch(username1Input.value.length){
+                case 1:
+                    nameplayer.style.fontSize = "4em"
+                    break
+                case 2:
+                    nameplayer.style.fontSize = "3.5em"
+                    break
+                case 3:
+                    nameplayer.style.fontSize = "3em"
+                    break
+                case 4:
+                    nameplayer.style.fontSize = "2.5em"
+                    break
+                case 5:
+                    nameplayer.style.fontSize = "1.5em"
+                    break
+                case 6:
+                    nameplayer.style.fontSize = "1.2em"
+                    break
+                case 7:
+                    nameplayer.style.fontSize = "1em"
+                    break
+                case 8:
+                    nameplayer.style.fontSize = "0.8em"
+                    break
+                case 9:
+                    nameplayer.style.fontSize = "0.8em"
+                    break
+                default:
+                    nameplayer.style.fontSize = "0.7em"
+                    break
+            }
+        })
+    })
 }

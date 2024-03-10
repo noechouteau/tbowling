@@ -7,14 +7,80 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+
+
+    <div class="loading-bar">
+        <div class="progress"></div>
+        <p id="waitText">Please wait while the assets are loading...</p>
+        <p id="launchText" class="ended">Finished !</p>
+        <p id="tdp" >All the 3D assets were made by the user "tiunov.se" on <a style="z-index: 15;position: relative;" href="https://sketchfab.com/3d-models/bowling-club-0b8fae45fcda4fe78f93bb2a899401a6">Sketchfab.</a></p>
+    </div>
+
+    <div id="menuDiv" style="position: absolute;color: white;text-align: center;">
+        <div id="titleDiv" style="top:-50vh;">
+            <div><img id="title" src="logo.png" alt="title"></div>
+            <p style="font-family: 'Poppins', sans-serif;">All the 3D assets were made by the user "tiunov.se" on <a href="https://sketchfab.com/3d-models/bowling-club-0b8fae45fcda4fe78f93bb2a899401a6">Sketchfab.</a></p>
+            <p style="font-family: 'Poppins', sans-serif;"> Drag the mouse to aim, release to throw the ball ! </p>
+        </div>
+        
+        <div id="modesDiv" >
+            <div style="left:-50vw;position: relative;"><img id="oplayer" src="onePlayer.png" alt="onePlayerImage"><h1>One Player</h1></div>
+            <div style="right:-50vw;position: relative;"><img id="tplayers" src="twoPlayers.png" alt="twoPlayersImage"><h1>Two Players</h1></div>
+        </div>
+    </div>
+
+    <div id="usernameDiv" style="position: absolute;z-index: 3;">
+        <h2>What's your name ?</h2>
+        <input id="username1Input" type="text" maxlength="10">
+        <button id="submitUsername1">Perfect !</button>
+    </div>
+
+
     <div id="eventImageDiv" style="width:100vw; height:100vh; display: flex;justify-content: center;align-items: center;position: absolute;pointer-events: none;">
         <h1 id="eventText">0</h1>
-        <img id="eventImage" src="images/moai.jpg" style="z-index: 2;position: absolute; opacity: 0;width: 100vw;height: 100vh;" draggable="false">
+        <img id="eventImage" src="images/moai.jpg" style="z-index: 2;position: absolute; opacity: 0;width: 100vw;height: 100vh;" draggable="false" alt="moai">
     </div>
+
+    <div id="strikeDiv" style="width:100vw; height:100vh; display: flex;justify-content: center;align-items: center;position: absolute;pointer-events: none;">
+        <div id="strikeText" class="wrapper">
+            <div class="bg"> Strike ! </div>
+            <div class="fg"> Strike ! </div>
+        </div>
+
+        <div id="spareText" class="wrapper">
+            <div class="sbg"> Spare </div>
+            <div class="sfg"> Spare </div>
+        </div>
+
+        <div id="finishedText" class="wrapper">
+            <div class="bg"> Game finished !</div>
+            <div class="ffg"> Game finished !</div>
+        </div>
+    </div>
+
+    <div id="finalDiv">
+        <h1 id="highscoreH1">Highscore :</h1>
+            <h1>Game finished !</h1>
+            <div id="playersFinal">
+                <div id="playerOneFinal">
+                    <div id="finalText">
+                        <h2 id="finalScore1"></h2>
+                    </div>
+                </div>
+                <div id="playerTwoFinal">
+                    <div id="finalText">
+                        <h2 id="finalScore2"></h2>
+                    </div>
+                </div>
+            </div>
+
+        <button id="restartButton">Back to menu</button>
+    </div>
+
     <div id="scoreDiv">
         <div id="scores">
             <div id="nameDiv">
-                <p id="nameplayer">zizi</p>
+                <p id="nameplayer"></p>
             </div>
             <p id="tir1manche1"></p>
             <p id="tir2manche1"></p>
@@ -49,7 +115,7 @@
             <p id="totalmanche10"></p>
             <p id="total"></p>
         </div>
-        <img id="scoreImg" src="score.png" draggable="false" >
+        <img id="scoreImg" src="score.png" draggable="false" alt="scoredisplay">
     </div>
     <canvas class="webgl"></canvas>
     <script type="module" src="./script.js"></script>
