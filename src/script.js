@@ -911,7 +911,6 @@ restartButton.addEventListener('click', () => {
     document.getElementById("tir3manche10").innerHTML = ""
     document.getElementById("totalmanche10").innerHTML = ""
     
-    manche = 10
     gsap.to(finalScoreDiv, {
         duration: 1,
         ease: "ease.out",
@@ -992,7 +991,6 @@ let handleEnd = () => {
         })
     })
 }
-manche = 10
 
 let handleTir = (score) =>{
     already = false
