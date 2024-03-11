@@ -31,7 +31,10 @@
 
     <div id="usernameDiv" style="position: absolute;z-index: 3;">
         <h2>What's your name ?</h2>
-        <input id="username1Input" type="text" maxlength="10">
+        <div style="display: flex; gap:10px">
+            <input id="username1Input" type="text" maxlength="10">
+            <input id="username2Input" type="text" maxlength="10">
+        </div>
         <button id="submitUsername1">Perfect !</button>
     </div>
 
@@ -50,6 +53,16 @@
         <div id="spareText" class="wrapper">
             <div class="sbg"> Spare </div>
             <div class="sfg"> Spare </div>
+        </div>
+
+        <div id="strikeText2" class="wrapper">
+            <div class="bg2"> Strike ! </div>
+            <div class="fg2"> Strike ! </div>
+        </div>
+
+        <div id="spareText2" class="wrapper">
+            <div class="sbg2"> Spare </div>
+            <div class="sfg2"> Spare </div>
         </div>
 
         <div id="finishedText" class="wrapper">
@@ -117,6 +130,48 @@
         </div>
         <img id="scoreImg" src="score.png" draggable="false" alt="scoredisplay">
     </div>
+
+    <div id="scoreDiv2">
+        <div id="scores2">
+            <div id="nameDiv2">
+                <p id="nameplayer2"></p>
+            </div>
+            <p id="tir1manche1_2"></p>
+            <p id="tir2manche1_2"></p>
+            <p id="totalmanche1_2"></p>
+            <p id="tir1manche2_2"></p>
+            <p id="tir2manche2_2"></p>
+            <p id="totalmanche2_2"></p>
+            <p id="tir1manche3_2"></p>
+            <p id="tir2manche3_2"></p>
+            <p id="totalmanche3_2"></p>
+            <p id="tir1manche4_2"></p>
+            <p id="tir2manche4_2"></p>
+            <p id="totalmanche4_2"></p>
+            <p id="tir1manche5_2"></p>
+            <p id="tir2manche5_2"></p>
+            <p id="totalmanche5_2"></p>
+            <p id="tir1manche6_2"></p>
+            <p id="tir2manche6_2"></p>
+            <p id="totalmanche6_2"></p>
+            <p id="tir1manche7_2"></p>
+            <p id="tir2manche7_2"></p>
+            <p id="totalmanche7_2"></p>
+            <p id="tir1manche8_2"></p>
+            <p id="tir2manche8_2"></p>
+            <p id="totalmanche8_2"></p>
+            <p id="tir1manche9_2"></p>
+            <p id="tir2manche9_2"></p>
+            <p id="totalmanche9_2"></p>
+            <p id="tir1manche10_2"></p>
+            <p id="tir2manche10_2"></p>
+            <p id="tir3manche10_2"></p>
+            <p id="totalmanche10_2"></p>
+            <p id="total2"></p>
+        </div>
+        <img id="scoreImg2" src="score2.png" draggable="false" alt="scoredisplay">
+    </div>
+
     <canvas class="webgl"></canvas>
     <script type="module" src="./script.js"></script>
 </body>

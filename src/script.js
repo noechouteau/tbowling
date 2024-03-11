@@ -7,12 +7,14 @@ import CannonDebugger from 'cannon-es-debugger'
 import { threeToCannon, ShapeType } from 'three-to-cannon';
 import { gsap } from "gsap";
 
-
+let twoPlayers = false
+let playerTurn = 1
 
 THREE.ColorManagement.enabled = false
 let followBall = false
 let ballLaunched = false
 let totalScore = 0
+let totalScore2 = 0
 let manche = 1
 let tir = 1
 let Lastnb = 0
@@ -32,6 +34,8 @@ let eventImage = document.getElementById("eventImage")
 let eventText = document.getElementById("eventText")
 let strikeText = document.getElementById("strikeText")
 let spareText = document.getElementById("spareText")
+let strikeText2 = document.getElementById("strikeText2")
+let spareText2 = document.getElementById("spareText2")
 let finishedText = document.getElementById("finishedText")
 let restartButton = document.getElementById("restartButton")
 
@@ -39,6 +43,7 @@ let failSounds = ["alarm.mp3", "boom.mp3", "goofyglisse.mp3","malicieux.mp3","vi
 let failImages = ["wwchokbar.jpg","moai.jpg","nerd.jpg","wisetree.jpg","grr.jpg","ahah.png"]
 
 let scoreDiv = document.getElementById("scoreDiv")
+let scoreDiv2 = document.getElementById("scoreDiv2")
 
 const loadingBarContainer = document.querySelector('.loading-bar')
 const loadingBarElement = document.querySelector('.progress')
@@ -63,7 +68,6 @@ const loadingManager = new THREE.LoadingManager(
             {
                 loadingBarContainer.style.display = 'none'
                 launchText.style.opacity = '0'
-                gui.show();
             })
   
         })
@@ -82,7 +86,6 @@ const loadingManager = new THREE.LoadingManager(
 /**
  * Debug
  */
-const gui = new dat.GUI()
 const debugObject = {}
 
 debugObject.reset = () =>
@@ -96,7 +99,6 @@ debugObject.reset = () =>
     }
     objectsToUpdate.splice(0, objectsToUpdate.length)
 }
-gui.add(debugObject,'reset')
 
 /**
  * Base
@@ -357,92 +359,25 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  */
 const objectsToUpdate = []
 
-const sphereGeometry = new THREE.SphereGeometry(1,20,20)
-const sphereMaterial = new THREE.MeshStandardMaterial({
-    metalness: 0.3,
-    roughness: 0.4,
-    envMap: environmentMapTexture,
-})
 
-const boxGeometry = new THREE.BoxGeometry(1,1,1)
-const boxMaterial = new THREE.MeshStandardMaterial({
-    metalness: 0.3,
-    roughness: 0.4,
-    envMap: environmentMapTexture,
-})
-
-const createSphere = (radius,position) =>
-{
-    //THree js mesh
-    const mesh = new THREE.Mesh(
-        sphereGeometry,
-        sphereMaterial
-    )
-    mesh.scale.set(radius,radius,radius)
-    mesh.castShadow = true
-    mesh.position.copy(position)
-    scene.add(mesh)
-
-    //Cannon js body
-    const shape = new CANNON.Sphere(radius)
-    const body = new CANNON.Body({
-        mass: 1,
-        position: new CANNON.Vec3(0,3,0),
-        shape,
-        material: defaultMaterial
-    })
-    body.position.copy(position)
-    body.addEventListener('collide', playHitSound)
-    world.addBody(body)
-
-    //Save in objects to update
-    objectsToUpdate.push({
-        mesh,
-        body
-    })
-}
 
 const cannonDebugger = new CannonDebugger(scene, world, {
     // options...
   })
 
-const createBox = (width, height, depth ,position) => 
-{
-    const mesh = new THREE.Mesh(
-        boxGeometry,
-        boxMaterial
-    )
-    mesh.scale.set(width,height,depth)
-    mesh.castShadow = true
-    mesh.position.copy(position)
-    scene.add(mesh)
 
-    //Cannon js body
-    const shape = new CANNON.Box(new CANNON.Vec3(width/2,height/2,depth/2))
-    const body = new CANNON.Body({
-        mass: 1,
-        position: new CANNON.Vec3(0,3,0),
-        shape,
-        material: ballContactMaterial
-    })
-    body.position.copy(position)
-
-    body.addEventListener('collide', playHitSound)
-    
-    world.addBody(body)
-
-    //Save in objects to update
-    objectsToUpdate.push({
-        mesh,
-        body
-    })
-}
 let ballBody
 let ballMesh
 const createBall = (radius,position) =>
 {
+    let model
+    if(playerTurn == 1){
+        model = '/models/blueBowlingBall.glb'
+    } else {
+        model = '/models/redBowlingBall.glb'
+    }
     gltfLoader.load(
-        '/models/blueBowlingBall.glb',
+        model,
         (gltf) =>
         {
             console.log()
@@ -739,7 +674,11 @@ const tick = () =>
                 i++
                 if(quille == quilles[quilles.length-1]){
                     console.log(cpt)
-                    handleTir(cpt)
+                    if(playerTurn == 1){
+                        handleTir(cpt)
+                    } else {
+                        handleTir2(cpt)
+                    }
                 }
 
             }
@@ -805,15 +744,16 @@ window.addEventListener('mousedown', function(event) {
 
     if(event.target == oplayer){
         handleOnePlayerClick()
+    } else if(event.target == tplayers){
+        handleTwoPlayersClick()
     }
-
 
     const intersects = raycaster.intersectObjects( scene.children );
 
 	for (let intersect of intersects) {
 
         console.log(intersect.object)
-        if(intersect.object.name === "Bowling_ball014_Material_#4302_0"){
+        if(intersect.object.name.includes("Bowling_ball")){
             scene.add(arrowMesh)
             window.addEventListener('pointermove', getPointer, false);
 
@@ -829,11 +769,19 @@ window.addEventListener('mouseup', function(event) {
 
 
     if(ballLaunched && followBall == false){
+        if(pointer.y == 0){
+            pointer.x = 0.5
+        }
         gsap.to(scoreDiv, { 
             duration: 0.7,
             ease: "back.in",
             left: "-1000px",
           });
+        gsap.to(scoreDiv2, {
+            duration: 0.7,
+            ease: "back.in",
+            right: "-1000px",
+            });
         followBall = true
         ballBody.applyLocalForce(new CANNON.Vec3(pointer.y*-10000,0,pointer.x * -2500), new CANNON.Vec3(0,0,0))
         let bodyList = []
@@ -876,13 +824,17 @@ let upQuilles = []
 let previousScore = 0
 let strike = false
 let doubleStrike = false
+let doubleStrike2 = false
 let spare = false
 let wasStrike = false
+let wasStrike2 = false
 let wasSpare = false
+let wasSpare2 = false
 let newHighscore = false
 let finalScore1 = document.getElementById("finalScore1")
+let finalScore2 = document.getElementById("finalScore2")
 let finalScoreDiv = document.getElementById("finalDiv")
-
+manche = 10
 restartButton.addEventListener('click', () => {
     totalScore = 0
     manche = 1
@@ -899,6 +851,8 @@ restartButton.addEventListener('click', () => {
     tempQuilles = []
     upQuilles = []
     createQuilles()
+    twoPlayers = false
+    playerTurn = 1
     
     for (let manches = 1; manches < 11; manches++){
         for (let tirs = 1; tirs < 3; tirs++){
@@ -930,9 +884,19 @@ restartButton.addEventListener('click', () => {
 
 let handleEnd = () => {
     hishgscoreH1.innerHTML = "All time Highscore : " + highscore + " by " + highscoreName
-    if(totalScore > highscore){
-        window.localStorage.setItem("highscore", totalScore)
-        window.localStorage.setItem("highscoreName", nameplayer.innerHTML)
+    if((totalScore > highscore)){
+        if(totalScore2 > totalScore){
+            window.localStorage.setItem("highscore", totalScore2)
+            window.localStorage.setItem("highscoreName", nameplayer2.innerHTML)
+            newHighscore = true
+        } else {
+            window.localStorage.setItem("highscore", totalScore)
+            window.localStorage.setItem("highscoreName", nameplayer.innerHTML)
+            newHighscore = true
+        }
+    } else if(totalScore2 > highscore){
+        window.localStorage.setItem("highscore", totalScore2)
+        window.localStorage.setItem("highscoreName", nameplayer2.innerHTML)
         newHighscore = true
     }
     finishedText.style.display = "grid"
@@ -985,6 +949,7 @@ let handleEnd = () => {
                 z: 13,
             })
             finalScore1.innerHTML = nameplayer.innerHTML + "'s score : " + totalScore
+            finalScore2.innerHTML = nameplayer2.innerHTML + "'s score : " + totalScore2
             if(newHighscore){
                 hishgscoreH1.innerHTML = "New Highscore : " + totalScore + " by " + nameplayer.innerHTML + " !"
             }
@@ -1084,6 +1049,13 @@ let handleTir = (score) =>{
         ease: "back.out",
         left: "-30px",
       });
+    if((tir == 2 || strike) && twoPlayers){
+        gsap.to(scoreDiv2, { 
+            duration: 0.7,
+            ease: "back.out",
+            right: "-30px",
+          });
+    }
 
     if(tir == 1 && !strike){
         tir = 2
@@ -1091,13 +1063,17 @@ let handleTir = (score) =>{
         tempQuilles = upQuilles
         console.log(tempQuilles)
     } else if(((tir == 2 || strike) && manche != 10)){
-        let totalManche = document.getElementById("totalmanche"+manche)
-        strike = false
-        spare = false
-        totalManche.innerHTML = totalScore
-        manche++
-        previousScore = 0
-        tir = 1
+            let totalManche = document.getElementById("totalmanche"+manche)
+            strike = false
+            spare = false
+            manche++
+
+            totalManche.innerHTML = totalScore
+            previousScore = 0
+            tir = 1
+            if(twoPlayers){
+                playerTurn = 2
+            }
         let i = 0
         for(let quille of quilles){
             world.removeBody(quille)
@@ -1123,10 +1099,17 @@ let handleTir = (score) =>{
         tempQuilles = []
         createQuilles()
     } else if(tir == 2 && manche == 10 && !spare && !strike && !wasStrike && !wasSpare){
-        tir = 3
-        previousScore = score
-        tempQuilles = upQuilles
-        handleEnd()
+        let totalManche = document.getElementById("totalmanche"+manche)
+        totalManche.innerHTML = totalScore
+
+        tir = 1
+        let total = document.getElementById("total")
+        total.innerHTML = totalScore
+        if(!twoPlayers){
+            handleEnd()
+        } else {
+            playerTurn = 2
+        }
     }
     else if(tir == 2 && manche == 10 && wasStrike){
         tir = 3
@@ -1149,6 +1132,7 @@ let handleTir = (score) =>{
         createQuilles()
     }
     else if(tir == 3){
+        tir = 1
         if(wasSpare || wasStrike){
             let totalPrevious = document.getElementById("totalmanche"+(manche-1))
             totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + score
@@ -1159,18 +1143,199 @@ let handleTir = (score) =>{
         totalManche.innerHTML = totalScore
         let total = document.getElementById("total")
         total.innerHTML = totalScore
-        handleEnd()
+        
+        if(!twoPlayers){
+            handleEnd()
+        } else {
+            playerTurn = 2
+        }
     }
 
 }
 
+
+let handleTir2 = (score) =>{
+    already = false
+    if(tir == 1){
+        manche--
+    }
+    console.log(score)
+    let scoreCase = document.getElementById("tir"+tir+"manche"+manche+"_2")
+    console.log("tir"+tir+"manche"+manche+"_2")
+    console.log(scoreCase)
+    scoreCase.innerHTML = score
+
+    if(score == 10){
+        if(tir == 1){
+            handleStrikeSpare(strikeText2)
+            if(wasStrike2 || wasSpare2){
+                if(doubleStrike2){
+                    let totalPrevious = document.getElementById("totalmanche"+(manche-2)+"_2")
+                    totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + 10
+                    totalScore2 += 10
+                }
+                let totalPrevious = document.getElementById("totalmanche"+(manche-1)+"_2")
+                doubleStrike2 = true
+                totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + 10
+                totalScore2 += 10
+                score = 10
+            } else {
+                doubleStrike2 = false
+            }
+            scoreCase.innerHTML = "X"
+            wasStrike2 = true
+            wasSpare2 = false
+            strike = true
+            console.log("total",totalScore2)
+        } else if(tir == 2){
+            handleStrikeSpare(spareText2)
+            if(wasStrike2){
+                let totalPrevious = document.getElementById("totalmanche"+(manche-1)+"_2")
+                totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + score
+                totalScore2 += score
+                console.log("total",totalScore2)
+
+            } else {
+                doubleStrike2 = false
+            }
+            scoreCase.innerHTML = "/"
+            wasSpare2 = true
+            wasStrike2 = false
+            spare = true
+        }
+
+        } else if(score + previousScore == 10){
+            handleStrikeSpare(spareText2)
+            if(wasStrike2){
+                let totalPrevious = document.getElementById("totalmanche"+(manche-1)+"_2")
+                totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + score
+                totalScore2 += score
+                console.log("total",totalScore2)
+
+            }
+            wasSpare2 = true
+            wasStrike2 = false
+            scoreCase.innerHTML = "/"
+            spare = true
+        } else if((tir == 1 && wasSpare2)){
+            let totalPrevious = document.getElementById("totalmanche"+(manche-1)+"_2")
+            totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + score
+            totalScore2 += score
+            console.log("total",totalScore2)
+            wasSpare2 = false
+        }else if(wasStrike2){
+            console.log(score)
+            if(doubleStrike2){
+                let totalPrevious = document.getElementById("totalmanche"+(manche-2)+"_2")
+                totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + score
+                totalScore2 += score
+                let totalPrevious2 = document.getElementById("totalmanche"+(manche-1)+"_2")
+                totalPrevious2.innerHTML = parseInt(totalPrevious2.innerHTML) + score + score
+                doubleStrike2 = false
+            } else {
+                let totalPrevious = document.getElementById("totalmanche"+(manche-1)+"_2")
+                totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + score
+            }
+            totalScore2 += score
+            console.log("total",totalScore2)
+
+            if(tir == 2  && manche != 10){
+                wasStrike2 = false
+            }
+        }
+        else if(tir == 2){
+            wasStrike2 = false
+            wasSpare2 = false
+        }
+
+        totalScore2 += score
+        gsap.to(scoreDiv2, { 
+            duration: 0.7,
+            ease: "back.out",
+            right: "-30px",
+          });
+
+        if(tir == 2 || strike){
+            gsap.to(scoreDiv, { 
+                duration: 0.7,
+                ease: "back.out",
+                left: "-30px",
+              });
+        }
+
+        if(tir == 1 && !strike){
+            tir = 2
+            previousScore = score
+            tempQuilles = upQuilles
+            console.log(tempQuilles)
+        } else if(((tir == 2 || strike) && manche != 10)){
+                let totalManche = document.getElementById("totalmanche"+manche+"_2")
+                strike = false
+                spare = false
+                manche++
+
+                totalManche.innerHTML = totalScore2
+                previousScore = 0
+                tir = 1
+                playerTurn = 1
+            let i = 0
+            for(let quille of quilles){
+                world.removeBody(quille)
+                scene.remove(qMeshes[i])
+                i++
+            }
+            quilles = []
+            qMeshes = []
+            tempQuilles = []
+            createQuilles()
+        }
+
+        else if (strike && manche == 10 && !spare){
+            strike = false
+            previousScore = 0
+            tir ++
+            let i = 0
+            for(let quille of quilles){
+                world.removeBody(quille)
+                scene.remove(qMeshes[i])
+                i++
+            }
+            quilles = []
+            qMeshes = []
+            tempQuilles = []
+            createQuilles()
+        } else if(tir == 2 && manche == 10 && !spare && !strike && !wasStrike2 && !wasSpare2){
+            tir = 3
+            previousScore = score
+            tempQuilles = upQuilles
+            handleEnd()
+        }
+        else if(tir == 3){
+            if(wasSpare2 || wasStrike2){
+                let totalPrevious = document.getElementById("totalmanche"+(manche-1)+"_2")
+                totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + score
+                totalScore2 += score
+                console.log("total",totalScore2)
+            }
+            let totalManche = document.getElementById("totalmanche"+manche+"_2")
+            totalManche.innerHTML = totalScore2
+            let total = document.getElementById("total2")
+            total.innerHTML = totalScore2
+            handleEnd()
+        }
+}
+
+
 let usernameDiv = document.getElementById("usernameDiv")
 let submitUsername1 = document.getElementById("submitUsername1")
 let nameplayer = document.getElementById("nameplayer")
+let nameplayer2 = document.getElementById("nameplayer2")
 let username1Input = document.getElementById("username1Input")
+let username2Input = document.getElementById("username2Input")
 
 let handleOnePlayerClick = () => {
     console.log("test")
+    usernameDiv.querySelector("h2").innerHTML = "What's your name ?"
     bg.play()
 
     gsap.to(usernameDiv, {
@@ -1205,39 +1370,57 @@ let handleOnePlayerClick = () => {
             })
             gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 1, value: 0})
             gsap.to(scoreDiv, { duration: 1, left: "-30px", delay:1})
+            if(twoPlayers){
+                gsap.to(scoreDiv2, { duration: 1, right: "-30px", delay:1})
+            }
             nameplayer.innerHTML = username1Input.value
-            switch(username1Input.value.length){
-                case 1:
-                    nameplayer.style.fontSize = "4em"
-                    break
-                case 2:
-                    nameplayer.style.fontSize = "3.5em"
-                    break
-                case 3:
-                    nameplayer.style.fontSize = "3em"
-                    break
-                case 4:
-                    nameplayer.style.fontSize = "2.5em"
-                    break
-                case 5:
-                    nameplayer.style.fontSize = "1.5em"
-                    break
-                case 6:
-                    nameplayer.style.fontSize = "1.2em"
-                    break
-                case 7:
-                    nameplayer.style.fontSize = "1em"
-                    break
-                case 8:
-                    nameplayer.style.fontSize = "0.8em"
-                    break
-                case 9:
-                    nameplayer.style.fontSize = "0.8em"
-                    break
-                default:
-                    nameplayer.style.fontSize = "0.7em"
-                    break
+            resizeName(username1Input.value, nameplayer)
+            if(twoPlayers){
+                nameplayer2.innerHTML = username2Input.value
+                resizeName(username2Input.value, nameplayer2)
             }
         })
     })
+}
+
+let handleTwoPlayersClick = () => {
+    twoPlayers = true
+    usernameDiv.querySelector("h2").innerHTML = "What's your names ?"
+    username2Input.style.display = "block"
+    handleOnePlayerClick()
+}
+
+let resizeName = (name, domName) => {
+    switch (name.length){
+        case 1:
+            domName.style.fontSize = "4em"
+            break
+        case 2:
+            domName.style.fontSize = "3.5em"
+            break
+        case 3:
+            domName.style.fontSize = "3em"
+            break
+        case 4:
+            domName.style.fontSize = "2.5em"
+            break
+        case 5:
+            domName.style.fontSize = "1.5em"
+            break
+        case 6:
+            domName.style.fontSize = "1.2em"
+            break
+        case 7:
+            domName.style.fontSize = "1em"
+            break
+        case 8:
+            domName.style.fontSize = "0.8em"
+            break
+        case 9:
+            domName.style.fontSize = "0.8em"
+            break
+        default:
+            domName.style.fontSize = "0.7em"
+            break
+    }
 }

@@ -22,7 +22,7 @@ body
     outline: none;
 }
 
-#scoreDiv{
+#scoreDiv, #scoreDiv2{
     position : absolute;
     z-index: 4;
     display: flex;
@@ -33,17 +33,25 @@ body
     border: 2px solid rgb(255, 255, 255);
     justify-content: center;
     background-color: rgb(20, 16, 59);
-    left: -1000px;
     margin: 10px;
 }
 
-#scoreDiv::-webkit-scrollbar {
+#scoreDiv{
+    left: -1000px;
+}
+
+#scoreDiv2{
+    right: -1000px;
+    background-color: #600d0d;
+}
+
+#scoreDiv::-webkit-scrollbar, #scoreDiv2::-webkit-scrollbar {
     width: 0px;
     background: transparent;
     display: none;
 }
 
-#scoreImg{
+#scoreImg, #scoreImg2{
     width: 200px;
     height: 790px;
     margin: 10px;
@@ -147,7 +155,7 @@ body
     font-size: 40px;
 }
 
-#usernameDiv input{
+#username1Input{
     width: 300px;
     height: 50px;
     border-radius: 10px;
@@ -158,6 +166,20 @@ body
     text-align: center;
     color: rgb(255, 255, 255);
     background-color: rgb(20, 16, 59);
+}
+
+#username2Input{
+    width: 300px;
+    height: 50px;
+    border-radius: 10px;
+    border: 2px solid rgb(255, 255, 255);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    display: none;
+    text-align: center;
+    color: rgb(255, 255, 255);
+    background-color: #600d0d;
 }
 
 #usernameDiv button{
@@ -218,7 +240,7 @@ body
   letter-spacing: 1px;
   -webkit-text-stroke: 4px transparent;
 }
-div.bg {
+div.bg, div.bg2 {
   background-image: repeating-linear-gradient( 105deg, 
     var(--gold) 0% , 
     var(--dark-shadow) 5%,
@@ -231,7 +253,7 @@ div.bg {
   transform: scaleY(1.05);
   transform-origin: top;
 }
-div.fg{
+div.fg, div.fg2{
   background-image: repeating-linear-gradient( 5deg,  
     var(--gold) 0% , 
     var(--light-shadow) 23%, 
@@ -241,6 +263,10 @@ div.fg{
   width: 101%;
   text-align: center;
   transform: scale(1);
+}
+
+div.fg2{
+    color: #600d0d;
 }
 
 div.ffg{
@@ -255,7 +281,7 @@ div.ffg{
     transform: scale(1);
   }
 
-div.sbg {
+div.sbg, div.sbg2 {
 background-image: repeating-linear-gradient( 105deg, 
     var(--silver) 0% , 
     var(--dark-silver-shadow) 5%,
@@ -268,7 +294,7 @@ filter: drop-shadow(5px 15px 15px black);
 transform: scaleY(1.05);
 transform-origin: top;
 }
-div.sfg{
+div.sfg, div.sfg2{
 background-image: repeating-linear-gradient( 5deg,  
     var(--silver) 0% , 
     var(--light-silver-shadow) 23%, 
@@ -280,7 +306,11 @@ text-align: center;
 transform: scale(1);
 }
 
-#scores{
+div.sfg2{
+    color: #600d0d;
+}
+
+#scores, #scores2{
     position: absolute;
     color: rgb(255, 255, 255);
 
@@ -288,13 +318,13 @@ transform: scale(1);
     font-weight: 900;
 }
 
-#nameplayer{
+#nameplayer, #nameplayer2{
     position: absolute;
     font-size: x-large;
     text-align: center;
 }
 
-#nameDiv{
+#nameDiv, #nameDiv2{
     position : absolute;
     z-index: 2;
     width: 149px;
@@ -304,6 +334,10 @@ transform: scale(1);
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+#nameDiv2{
+    left: -93px;
 }
 
 #finalDiv{
@@ -426,11 +460,13 @@ transform: scale(1);
     top: 76px;
 }
 
+
 #tir1manche2{
     position: absolute;
     left: -8px;
     top: 143px;
 }
+
 
 #tir2manche2{
     position: absolute;
@@ -618,9 +654,209 @@ transform: scale(1);
 
 
 
+#tir1manche1_2{
+    position: absolute;
+    right: 8px;
+    top: 76px;
+}
+
+#tir2manche1_2{
+    position: absolute;
+    right: -27px;
+    top: 76px;
+}
+
+#tir1manche2_2{
+    position: absolute;
+    right: 8px;
+    top: 143px;
+}
+
+#tir2manche2_2{
+    position: absolute;
+    right: -27px;
+    top: 143px;
+}
+
+#tir1manche3_2{
+    position: absolute;
+    right: 8px;
+    top: 208px;
+}
+
+#tir2manche3_2{
+    position: absolute;
+    right: -27px;
+    top: 208px;
+}
+
+#tir1manche4_2{
+    position: absolute;
+    right: 8px;
+    top: 273px;
+}
+
+#tir2manche4_2{
+    position: absolute;
+    right: -27px;
+    top: 273px;
+}
+
+#tir1manche5_2{
+    position: absolute;
+    right: 8px;
+    top: 340px;
+}
+
+#tir2manche5_2{
+    position: absolute;
+    right: -27px;
+    top: 340px;
+}
+
+#tir1manche6_2{
+    position: absolute;
+    right: 8px;
+    top: 406px;
+}
+
+#tir2manche6_2{
+    position: absolute;
+    right: -27px;
+    top: 406px;
+}
+
+#tir1manche7_2{
+    position: absolute;
+    right: 8px;
+    top: 471px;
+}
 
 
+#tir2manche7_2{
+    position: absolute;
+    right: -27px;
+    top: 471px;
+}
 
+
+#tir1manche8_2{
+    position: absolute;
+    right: 8px;
+    top: 536px;
+}
+
+#tir2manche8_2{
+    position: absolute;
+    right: -27px;
+    top: 536px;
+}
+
+#tir1manche9_2{
+    position: absolute;
+    right: 8px;
+    top: 603px;
+}
+
+#tir2manche9_2{
+    position: absolute;
+    right: -27px;
+    top: 603px;
+}
+
+#tir1manche10_2{
+    position: absolute;
+    right: 42px;
+    top: 668px;
+}
+
+#tir2manche10_2{
+    position: absolute;
+    right: 8px;
+    top: 668px;
+}
+
+#tir3manche10_2{
+    position: absolute;
+    right: -25px;
+    top: 668px;
+}
+
+#totalmanche1_2{
+    position: absolute;
+    right: 0px;
+    top: 109px;
+
+}
+
+#totalmanche2_2{
+    position: absolute;
+    right: 0px;
+    top: 176px;
+
+}
+
+#totalmanche3_2{
+    position: absolute;
+    right: 0px;
+    top: 241px;
+
+}
+
+#totalmanche4_2{
+    position: absolute;
+    right: 0px;
+    top: 306px;
+
+}
+
+#totalmanche5_2{
+    position: absolute;
+    right: 0px;
+    top: 373px;
+
+}
+
+#totalmanche6_2{
+    position: absolute;
+    right: 0px;
+    top: 439px;
+
+}
+
+#totalmanche7_2{
+    position: absolute;
+    right: 0px;
+    top: 504px;
+
+}
+
+#totalmanche8_2{
+    position: absolute;
+    right: 0px;
+    top: 569px;
+
+}
+
+#totalmanche9_2{
+    position: absolute;
+    right: 0px;
+    top: 636px;
+
+}
+
+#totalmanche10_2{
+    position: absolute;
+    right: 0px;
+    top: 701px;
+}
+
+#total2{
+    position: absolute;
+    font-size: x-large;
+    top: 748px;
+    right: -3px;
+}
 
 
 
