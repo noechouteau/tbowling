@@ -9,6 +9,7 @@ import { gsap } from "gsap";
 
 let twoPlayers = false
 let playerTurn = 1
+let finished = false
 
 THREE.ColorManagement.enabled = false
 let followBall = false
@@ -371,7 +372,7 @@ let ballMesh
 const createBall = (radius,position) =>
 {
     let model
-    if(playerTurn == 1){
+    if(playerTurn == 1 ){
         model = '/models/blueBowlingBall.glb'
     } else {
         model = '/models/redBowlingBall.glb'
@@ -627,8 +628,6 @@ const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - oldElapsedTime
-    oldElapsedTime = elapsedTime
-    if(ballBody)
 
     if(ballBody && followBall && camera.position.x < 70 && ballBody.position.y > 0){
         gsap.to(camera.position, { 
@@ -644,8 +643,10 @@ const tick = () =>
             y: ballBody.position.y,
             z: ballBody.position.z,
           });
-    } else if((ballBody && ballBody.position.x > 79 && ballLaunched) ||(ballBody && ballBody.position.y < 0 && ballLaunched)){
+    } else if((ballBody && ballBody.position.x > 79 && ballLaunched) ||(ballBody && ballBody.position.y < 0 && ballLaunched) 
+            || (ballBody && ballBody.position.x > 60 && (elapsedTime - oldElapsedTime) > 7 && ballLaunched)){
         let cpt = 0
+        oldElapsedTime = elapsedTime
         ballLaunched = false
         console.log("test")
         let i = 0
@@ -837,6 +838,7 @@ let finalScoreDiv = document.getElementById("finalDiv")
 manche = 10
 restartButton.addEventListener('click', () => {
     totalScore = 0
+    totalScore2 = 0
     manche = 1
     tir = 1
     Lastnb = 0
@@ -851,25 +853,33 @@ restartButton.addEventListener('click', () => {
     tempQuilles = []
     upQuilles = []
     createQuilles()
-    twoPlayers = false
     playerTurn = 1
     
     for (let manches = 1; manches < 11; manches++){
         for (let tirs = 1; tirs < 3; tirs++){
             let scoreCase = document.getElementById("tir"+tirs+"manche"+manches)
             scoreCase.innerHTML = ""
+            let scoreCase2 = document.getElementById("tir"+tirs+"manche"+manches+"_2")
+            scoreCase2.innerHTML = ""
         }
         let totalCase = document.getElementById("totalmanche"+manches)
         totalCase.innerHTML = ""
+        let totalCase2 = document.getElementById("totalmanche"+manches+"_2")
+        totalCase2.innerHTML = ""
     }
     document.getElementById("tir3manche10").innerHTML = ""
     document.getElementById("totalmanche10").innerHTML = ""
+    document.getElementById("tir3manche10_2").innerHTML = ""
+    document.getElementById("totalmanche10_2").innerHTML = ""
+    document.getElementById("total").innerHTML = ""
+    document.getElementById("total2").innerHTML = ""
     
     gsap.to(finalScoreDiv, {
         duration: 1,
         ease: "ease.out",
         top: "100vh",
     })
+
     gsap.to(menuDiv, {
         duration: 1,
         ease: "ease.out",
@@ -880,15 +890,34 @@ restartButton.addEventListener('click', () => {
         ease: "ease.out",
         left: "-1000px",
     })
+    if(twoPlayers){
+        gsap.to(scoreDiv2, {
+            duration: 1,
+            ease: "ease.out",
+            right: "-1000px",
+        }).then(()=>{
+            twoPlayers = false
+            world.removeBody(ballBody)
+            scene.remove(ballMesh)
+            createBall(0.47,{x:-1,y:0.9,z:-0.3})})
+    }
 })
 
 let handleEnd = () => {
+    let h1win = playersFinal.querySelector("h1")
+    if(twoPlayers){
+        let playersFinal = document.getElementById("playersFinal")
+        let playerTwoFinal = document.getElementById("playerTwoFinal")
+        playerTwoFinal.style.display = "block"
+        h1win.innerHTML = nameplayer.innerHTML + " wins !"
+    }
     hishgscoreH1.innerHTML = "All time Highscore : " + highscore + " by " + highscoreName
     if((totalScore > highscore)){
         if(totalScore2 > totalScore){
             window.localStorage.setItem("highscore", totalScore2)
             window.localStorage.setItem("highscoreName", nameplayer2.innerHTML)
             newHighscore = true
+            h1win.innerHTML = nameplayer2.innerHTML + " wins !"
         } else {
             window.localStorage.setItem("highscore", totalScore)
             window.localStorage.setItem("highscoreName", nameplayer.innerHTML)
@@ -898,6 +927,11 @@ let handleEnd = () => {
         window.localStorage.setItem("highscore", totalScore2)
         window.localStorage.setItem("highscoreName", nameplayer2.innerHTML)
         newHighscore = true
+        h1win.innerHTML = nameplayer2.innerHTML + " wins !"
+    } else if(totalScore2 > totalScore){
+        h1win.innerHTML = nameplayer2.innerHTML + " wins !"
+    } else if (totalScore2 == totalScore){
+        h1win.innerHTML = "It's a tie !"
     }
     finishedText.style.display = "grid"
     finishedText.style.opacity = 1
@@ -929,6 +963,18 @@ let handleEnd = () => {
                 finishedText.style.opacity = 0
                 finishedText.style.scale = 1
             })
+            gsap.to(scoreDiv,{
+                duration: 1,
+                ease: "ease.out",
+                left: "-30px",
+            })
+            if(twoPlayers){
+                gsap.to(scoreDiv2,{
+                    duration: 1,
+                    ease: "ease.out",
+                    right: "-30px",
+                })
+            }
             gsap.to(finalScoreDiv, {
                 duration: 1,
                 ease: "ease.out",
@@ -956,6 +1002,7 @@ let handleEnd = () => {
         })
     })
 }
+
 
 let handleTir = (score) =>{
     already = false
@@ -1043,19 +1090,6 @@ let handleTir = (score) =>{
         wasSpare = false
     }
 
-    totalScore += score
-    gsap.to(scoreDiv, { 
-        duration: 0.7,
-        ease: "back.out",
-        left: "-30px",
-      });
-    if((tir == 2 || strike) && twoPlayers){
-        gsap.to(scoreDiv2, { 
-            duration: 0.7,
-            ease: "back.out",
-            right: "-30px",
-          });
-    }
 
     if(tir == 1 && !strike){
         tir = 2
@@ -1105,9 +1139,24 @@ let handleTir = (score) =>{
         tir = 1
         let total = document.getElementById("total")
         total.innerHTML = totalScore
+
+
         if(!twoPlayers){
+            finished = true
             handleEnd()
         } else {
+            let i = 0
+            for(let quille of quilles){
+                world.removeBody(quille)
+                scene.remove(qMeshes[i])
+                i++
+            }
+            quilles = []
+            qMeshes = []
+            tempQuilles = []
+            createQuilles()
+
+            manche++
             playerTurn = 2
         }
     }
@@ -1145,9 +1194,37 @@ let handleTir = (score) =>{
         total.innerHTML = totalScore
         
         if(!twoPlayers){
+            finished = true
             handleEnd()
         } else {
+            let i = 0
+            for(let quille of quilles){
+                world.removeBody(quille)
+                scene.remove(qMeshes[i])
+                i++
+            }
+            quilles = []
+            qMeshes = []
+            tempQuilles = []
+            createQuilles()
+            manche++
             playerTurn = 2
+        }
+    }
+
+    totalScore += score
+    if(!finished || twoPlayers){
+        gsap.to(scoreDiv, { 
+            duration: 0.7,
+            ease: "back.out",
+            left: "-30px",
+        });
+        if((tir == 1 || strike) && twoPlayers){
+            gsap.to(scoreDiv2, { 
+                duration: 0.7,
+                ease: "back.out",
+                right: "-30px",
+            });
         }
     }
 
@@ -1248,20 +1325,6 @@ let handleTir2 = (score) =>{
             wasSpare2 = false
         }
 
-        totalScore2 += score
-        gsap.to(scoreDiv2, { 
-            duration: 0.7,
-            ease: "back.out",
-            right: "-30px",
-          });
-
-        if(tir == 2 || strike){
-            gsap.to(scoreDiv, { 
-                duration: 0.7,
-                ease: "back.out",
-                left: "-30px",
-              });
-        }
 
         if(tir == 1 && !strike){
             tir = 2
@@ -1308,8 +1371,36 @@ let handleTir2 = (score) =>{
             tir = 3
             previousScore = score
             tempQuilles = upQuilles
+
+            let totalManche = document.getElementById("totalmanche"+manche+"_2")
+            totalManche.innerHTML = totalScore2
+            let total = document.getElementById("total2")
+            total.innerHTML = totalScore2
+            finished = true
             handleEnd()
         }
+
+        else if(tir == 2 && manche == 10 && wasStrike2){
+            tir = 3
+            previousScore = score
+            tempQuilles = upQuilles
+        }
+        else if(tir == 2 && manche == 10 && spare){
+            tir = 3
+            spare = false
+            previousScore = 0
+            let i = 0
+            for(let quille of quilles){
+                world.removeBody(quille)
+                scene.remove(qMeshes[i])
+                i++
+            }
+            quilles = []
+            qMeshes = []
+            tempQuilles = []
+            createQuilles()
+        }
+
         else if(tir == 3){
             if(wasSpare2 || wasStrike2){
                 let totalPrevious = document.getElementById("totalmanche"+(manche-1)+"_2")
@@ -1321,7 +1412,25 @@ let handleTir2 = (score) =>{
             totalManche.innerHTML = totalScore2
             let total = document.getElementById("total2")
             total.innerHTML = totalScore2
+            finished = true
             handleEnd()
+        }
+
+        totalScore2 += score
+        if(!finished){
+            gsap.to(scoreDiv2, { 
+                duration: 0.7,
+                ease: "back.out",
+                right: "-30px",
+            });
+
+            if(tir == 1 || strike){
+                gsap.to(scoreDiv, { 
+                    duration: 0.7,
+                    ease: "back.out",
+                    left: "-30px",
+                });
+            }
         }
 }
 
@@ -1333,9 +1442,9 @@ let nameplayer2 = document.getElementById("nameplayer2")
 let username1Input = document.getElementById("username1Input")
 let username2Input = document.getElementById("username2Input")
 
-let handleOnePlayerClick = () => {
-    console.log("test")
-    usernameDiv.querySelector("h2").innerHTML = "What's your name ?"
+let handlePlayerClick = () => {
+    finished = false
+
     bg.play()
 
     gsap.to(usernameDiv, {
@@ -1353,7 +1462,10 @@ let handleOnePlayerClick = () => {
                 duration: 1,
                 ease: "back.in",
                 top: "-100vh",
-              });
+              }).then(()=>{
+                usernameDiv.style.top = "100vh"
+
+              })
             gsap.to(controls.target, {
                 duration: 2,
                 ease: "power1.in.out",
@@ -1368,7 +1480,9 @@ let handleOnePlayerClick = () => {
                 y: 2,
                 z: -0.3,
             })
-            gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 1, value: 0})
+            gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 1, value: 0}).then(()=>{
+                scene.remove(overlay)
+            })
             gsap.to(scoreDiv, { duration: 1, left: "-30px", delay:1})
             if(twoPlayers){
                 gsap.to(scoreDiv2, { duration: 1, right: "-30px", delay:1})
@@ -1383,11 +1497,19 @@ let handleOnePlayerClick = () => {
     })
 }
 
+
+let handleOnePlayerClick = () => {
+    usernameDiv.querySelector("h2").innerHTML = "What's your name ?"
+    username2Input.style.display = "none"
+    twoPlayers = false
+    handlePlayerClick()
+}
+
 let handleTwoPlayersClick = () => {
     twoPlayers = true
     usernameDiv.querySelector("h2").innerHTML = "What's your names ?"
     username2Input.style.display = "block"
-    handleOnePlayerClick()
+    handlePlayerClick()
 }
 
 let resizeName = (name, domName) => {
