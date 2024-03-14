@@ -932,7 +932,7 @@ let handleEnd = () => {
     }
     hishgscoreH1.innerHTML = "All time Highscore : " + highscore + " by " + highscoreName
     if((totalScore > highscore)){
-        if(totalScore2 > totalScore){
+        if(totalScore2 > totalScore && twoPlayers){
             window.localStorage.setItem("highscore", totalScore2)
             window.localStorage.setItem("highscoreName", nameplayer2.innerHTML)
             newHighscore = true
@@ -942,14 +942,14 @@ let handleEnd = () => {
             window.localStorage.setItem("highscoreName", nameplayer.innerHTML)
             newHighscore = true
         }
-    } else if(totalScore2 > highscore){
+    } else if(totalScore2 > highscore && twoPlayers){
         window.localStorage.setItem("highscore", totalScore2)
         window.localStorage.setItem("highscoreName", nameplayer2.innerHTML)
         newHighscore = true
         h1win.innerHTML = nameplayer2.innerHTML + " wins !"
-    } else if(totalScore2 > totalScore){
+    } else if(totalScore2 > totalScore && twoPlayers){
         h1win.innerHTML = nameplayer2.innerHTML + " wins !"
-    } else if (totalScore2 == totalScore){
+    } else if (totalScore2 == totalScore && twoPlayers){
         h1win.innerHTML = "It's a tie !"
     }
     finishedText.style.display = "grid"
