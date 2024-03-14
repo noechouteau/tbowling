@@ -347,7 +347,8 @@ controls.enableZoom = false
  * Renderer
  */
 const renderer = new THREE.WebGLRenderer({
-    canvas: canvas
+    canvas: canvas,
+    antialias: true,
 })
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace
 renderer.shadowMap.enabled = true
@@ -628,8 +629,10 @@ const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - oldElapsedTime
+    oldElapsedTime = elapsedTime
 
     if(ballBody && followBall && camera.position.x < 70 && ballBody.position.y > 0){
+        
         gsap.to(camera.position, { 
             duration: 0.5,
             ease: "power1.in.out",
@@ -643,10 +646,8 @@ const tick = () =>
             y: ballBody.position.y,
             z: ballBody.position.z,
           });
-    } else if((ballBody && ballBody.position.x > 79 && ballLaunched) ||(ballBody && ballBody.position.y < 0 && ballLaunched) 
-            || (ballBody && ballBody.position.x > 60 && (elapsedTime - oldElapsedTime) > 7 && ballLaunched)){
+    } else if((ballBody && ballBody.position.x > 79 && ballLaunched) ||(ballBody && ballBody.position.y < 0 && ballLaunched)){
         let cpt = 0
-        oldElapsedTime = elapsedTime
         ballLaunched = false
         console.log("test")
         let i = 0
@@ -655,6 +656,7 @@ const tick = () =>
             handleFailure()
         }
 
+        ballBody.velocity.set(0,0,0)
         setTimeout(() => {
             for(let quille of quilles){
                 console.log(quille.id, quille.position.x + quille.position.z, quille.position.y)
@@ -835,11 +837,12 @@ let newHighscore = false
 let finalScore1 = document.getElementById("finalScore1")
 let finalScore2 = document.getElementById("finalScore2")
 let finalScoreDiv = document.getElementById("finalDiv")
-manche = 10
 restartButton.addEventListener('click', () => {
     totalScore = 0
     totalScore2 = 0
     manche = 1
+    strike = false
+    spare = false
     tir = 1
     Lastnb = 0
     let i = 0
@@ -850,6 +853,10 @@ restartButton.addEventListener('click', () => {
     }
     quilles = []
     qMeshes = []
+    wasSpare = false
+    wasStrike = false
+    wasSpare2 = false
+    wasStrike2 = false
     tempQuilles = []
     upQuilles = []
     createQuilles()
@@ -1010,6 +1017,10 @@ let handleTir = (score) =>{
     let scoreCase = document.getElementById("tir"+tir+"manche"+manche)
     scoreCase.innerHTML = score
 
+    if(manche == 2 ){
+        score = 10
+    }
+
     if(score == 10){
         if(tir == 1){
             handleStrikeSpare(strikeText)
@@ -1019,8 +1030,10 @@ let handleTir = (score) =>{
                     totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + 10
                     totalScore += 10
                 }
+                if(wasStrike){
+                    doubleStrike = true
+                }
                 let totalPrevious = document.getElementById("totalmanche"+(manche-1))
-                doubleStrike = true
                 totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + 10
                 totalScore += 10
                 score = 10
@@ -1090,6 +1103,7 @@ let handleTir = (score) =>{
         wasSpare = false
     }
 
+    totalScore += score
 
     if(tir == 1 && !strike){
         tir = 2
@@ -1212,7 +1226,6 @@ let handleTir = (score) =>{
         }
     }
 
-    totalScore += score
     if(!finished || twoPlayers){
         gsap.to(scoreDiv, { 
             duration: 0.7,
@@ -1251,8 +1264,10 @@ let handleTir2 = (score) =>{
                     totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + 10
                     totalScore2 += 10
                 }
+                if(wasStrike2){
+                    doubleStrike2 = true
+                }                
                 let totalPrevious = document.getElementById("totalmanche"+(manche-1)+"_2")
-                doubleStrike2 = true
                 totalPrevious.innerHTML = parseInt(totalPrevious.innerHTML) + 10
                 totalScore2 += 10
                 score = 10
@@ -1324,6 +1339,8 @@ let handleTir2 = (score) =>{
             wasStrike2 = false
             wasSpare2 = false
         }
+
+        totalScore2 += score
 
 
         if(tir == 1 && !strike){
@@ -1416,7 +1433,6 @@ let handleTir2 = (score) =>{
             handleEnd()
         }
 
-        totalScore2 += score
         if(!finished){
             gsap.to(scoreDiv2, { 
                 duration: 0.7,
