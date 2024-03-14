@@ -624,12 +624,22 @@ let handleStrikeSpare = (text) => {
     })
     }
 
+let time = 0
+let setTime = 0
 
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - oldElapsedTime
     oldElapsedTime = elapsedTime
+
+    if(ballBody && ballBody.position.x > 65 && ballLaunched){
+        if(setTime == 0){
+            setTime = elapsedTime
+        }
+        time = elapsedTime - setTime
+        console.log(time)
+    }
 
     if(ballBody && followBall && camera.position.x < 70 && ballBody.position.y > 0){
         
@@ -646,8 +656,10 @@ const tick = () =>
             y: ballBody.position.y,
             z: ballBody.position.z,
           });
-    } else if((ballBody && ballBody.position.x > 79 && ballLaunched) ||(ballBody && ballBody.position.y < 0 && ballLaunched)){
+    } else if((ballBody && ballBody.position.x > 79 && ballLaunched) ||(ballBody && ballBody.position.y < 0 && ballLaunched) || time > 5){
         let cpt = 0
+        time = 0
+        setTime = 0
         ballLaunched = false
         console.log("test")
         let i = 0
