@@ -1029,10 +1029,6 @@ let handleTir = (score) =>{
     let scoreCase = document.getElementById("tir"+tir+"manche"+manche)
     scoreCase.innerHTML = score
 
-    if(manche == 2 ){
-        score = 10
-    }
-
     if(score == 10){
         if(tir == 1){
             handleStrikeSpare(strikeText)
